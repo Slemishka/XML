@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Project</title>
+</head>
+<body>
+    <div id="main">
+        <label for="type">Select Type:</label>
+        <select name="type" id="type">
+            <option value="All-Schools">All Schools</option>
+        </select>
+
+        <label for="name">Name (or partial)</label>
+        <input type="text" id="name">
+
+        <input type="submit" id="submit" onclick="render()">
+    </div>
+    <div id="output"></div>
+<script>
+    //populate the select element
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200){
+            populate(xhttp.responseXML);
+        }
+    };
+    xhttp.open("GET","schools.xml",true);
+    xhttp.send();
+
+    let selectEl = document.getElementById("type");
+    function populate(xml) {
+        let path = "/London-Schools/child::*";
+        if (xml.evaluate){
+            let nodes = xml.evaluate(path,xml,null,XPathResult.ANY_TYPE,null);
+            let result = nodes.iterateNext();
+            while(result){
+                let option = document.createElement("option");
+                let type = document.createTextNode(result.nodeName);
+                option.appendChild(type);
+                selectEl.appendChild(option);
+                console.log(result.nodeName);
+                result = nodes.iterateNext();
+            }
+        }else if (window.ActiveXObject || xhttp.responseType == "msxml-document") {
+            xml.setProperty("SelectionLanguage", "XPath");
+            nodes = xml.selectNodes(path);
+            for (i = 0; i < nodes.length; i++) {
+                var option = document.createElement("option");
+                var txt = nodes[i].nodeName;
+                option.appendChild(txt);
+                selectEl.appendChild(option);
+            }
+        }
+    }
+    
+    function loadDoc(file){
+        let request;
+        if (window.ActiveXObject) {
+            request = new ActiveXObject("Msxml2.XMLHTTP");
+        }
+        else {
+            request = new XMLHttpRequest();
+        }
+        request.open("GET", file, false);
+
+        try {
+            request.responseType = "msxml-document";
+        }
+        catch (err) {}
+        request.send("");
+        return request.responseXML;
+    }
+
+    function render(){
+        let xml = loadDoc("schools.xml"),
+            xslt = loadDoc("main.xslt");
+
+        let type = document.getElementById("type").value,
+            name = document.getElementById("name").value;
+
+
+        let processor = new XSLTProcessor();
+        processor.importStylesheet(xslt);
+        processor.setParameter(null,"type",type);
+        if (name!==""){
+            processor.setParameter(null,"name",name);
+        }
+        let result = processor.transformToFragment(xml,document);
+        document.getElementById("output").innerHTML = "";
+        document.getElementById("output").appendChild(result);
+    }
+
+
+</script>
+</body>
+</html>

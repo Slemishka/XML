@@ -1,0 +1,43 @@
+body{
+    background-image: url("background.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    color: white;
+}
+
+#main,#output,table{
+    margin: auto;
+    text-align: center;
+}
+#main{
+    width: fit-content;
+    background-color: #0000ffa6;
+    margin: 1em auto;
+    padding: 20px;
+    border-radius: 30px;
+}
+table{
+    background-color: #000000d1;
+    color: white;
+    padding: 20px;
+    border-collapse: collapse;
+}
+td,th{
+    border: 1px solid #ddd;
+    padding: 15px;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+
+tr:not(:first-child):hover{
+    background-color: #ddd;
+    color: black;
+}
+tr:not(:first-child):hover a{
+    color: black;
+}
+h2{
+    color:black;
+}
